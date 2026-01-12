@@ -1,21 +1,26 @@
 # Issue Tree - Recursive Problem Solving System
 
-A recursive problem-solving framework that decomposes complex problems into hierarchical trees of sub-problems, each solved independently by autonomous Claude agents.
+A recursive problem-solving framework that decomposes complex problems into hierarchical trees of
+sub-problems, each solved independently by autonomous Claude agents.
 
 ## Concept
 
 The Issue Tree system allows you to solve complex problems by:
 
 1. **Decomposition**: Breaking down a complex problem into smaller, manageable sub-problems
-2. **Independent Solving**: Each sub-problem is solved by an independent agent with limited information access
-3. **Synthesis**: Solutions bubble up from leaf nodes to parent nodes until the root problem is solved
+2. **Independent Solving**: Each sub-problem is solved by an independent agent with limited
+   information access
+3. **Synthesis**: Solutions bubble up from leaf nodes to parent nodes until the root problem is
+   solved
 
 ### Key Principles
 
-- **Recursive Structure**: Each node can either decompose further or solve directly
-- **Information Boundaries**: Agents can only see their node, ancestors (for context), and children (for synthesis)
-- **No Sibling Access**: Parallel branches remain independent to prevent contamination
-- **Autonomous Agents**: Each node is handled by a separate Claude instance with the same recursive logic
+-   **Recursive Structure**: Each node can either decompose further or solve directly
+-   **Information Boundaries**: Agents can only see their node, ancestors (for context), and
+    children (for synthesis)
+-   **No Sibling Access**: Parallel branches remain independent to prevent contamination
+-   **Autonomous Agents**: Each node is handled by a separate Claude instance with the same
+    recursive logic
 
 ## Architecture
 
@@ -64,6 +69,7 @@ The system provides two Claude Code skills:
 Initialize a new problem tree.
 
 **Usage:**
+
 ```bash
 # In your workspace
 claude
@@ -81,15 +87,16 @@ The core recursive solver. When invoked at a node, it will:
 1. Read and understand the problem
 2. Decide whether to DECOMPOSE or SOLVE
 3. If DECOMPOSE:
-   - Create sub-problem folders
-   - Write PROBLEM.md for each
-   - Invoke child Claude agents for each sub-problem
-   - Wait for solutions and synthesize
+    - Create sub-problem folders
+    - Write PROBLEM.md for each
+    - Invoke child Claude agents for each sub-problem
+    - Wait for solutions and synthesize
 4. If SOLVE:
-   - Research/experiment to find the answer
-   - Write SOLUTION.md with findings
+    - Research/experiment to find the answer
+    - Write SOLUTION.md with findings
 
 **Usage:**
+
 ```bash
 # Navigate to a problem node
 cd german-gov-os-decision
@@ -105,43 +112,49 @@ claude -p "Use the /solve-node skill to solve the problem in the current directo
 Let's say you want to solve: "Should the German government use Linux or Windows?"
 
 1. **Initialize the tree:**
-   ```bash
-   claude
-   # Tell Claude: "Use /init-problem-tree for: Should German gov use Linux or Windows?"
-   ```
+
+    ```bash
+    claude
+    # Tell Claude: "Use /init-problem-tree for: Should German gov use Linux or Windows?"
+    ```
 
 2. **Start solving:**
-   ```bash
-   cd german-gov-os-decision
-   claude -p "Use /solve-node skill"
-   ```
+
+    ```bash
+    cd german-gov-os-decision
+    claude -p "Use /solve-node skill"
+    ```
 
 3. **Agent at root decides to DECOMPOSE:**
-   - Creates subproblems: cost-analysis, security-comparison, compatibility, support-ecosystem, case-studies
-   - Writes PROBLEM.md for each
-   - Invokes 5 child Claude agents (one per sub-problem)
+
+    - Creates subproblems: cost-analysis, security-comparison, compatibility, support-ecosystem,
+      case-studies
+    - Writes PROBLEM.md for each
+    - Invokes 5 child Claude agents (one per sub-problem)
 
 4. **Each child agent runs independently:**
-   - cost-analysis agent: Might SOLVE directly by researching costs
-   - security-comparison agent: Might SOLVE directly by comparing security features
-   - case-studies agent: Might DECOMPOSE into specific country case studies (Munich, France, etc.)
+
+    - cost-analysis agent: Might SOLVE directly by researching costs
+    - security-comparison agent: Might SOLVE directly by comparing security features
+    - case-studies agent: Might DECOMPOSE into specific country case studies (Munich, France, etc.)
 
 5. **Solutions bubble up:**
-   - Leaf nodes solve and write SOLUTION.md
-   - Parent nodes read child SOLUTION.md files
-   - Parent synthesizes into its own SOLUTION.md
-   - Process continues up to root
+
+    - Leaf nodes solve and write SOLUTION.md
+    - Parent nodes read child SOLUTION.md files
+    - Parent synthesizes into its own SOLUTION.md
+    - Process continues up to root
 
 6. **Final result:**
-   - Root SOLUTION.md contains the comprehensive answer
-   - All supporting analysis is in the tree structure
+    - Root SOLUTION.md contains the comprehensive answer
+    - All supporting analysis is in the tree structure
 
 ### Nesting and Recursion
 
-- Claude Code has a 1-level nesting limit for subagents
-- We bypass this by invoking the `claude` binary directly via Bash
-- Each invocation is independent, allowing unlimited nesting depth
-- The system supports up to 4+ levels of decomposition
+-   Claude Code has a 1-level nesting limit for subagents
+-   We bypass this by invoking the `claude` binary directly via Bash
+-   Each invocation is independent, allowing unlimited nesting depth
+-   The system supports up to 4+ levels of decomposition
 
 ### Parallelization
 
@@ -162,30 +175,33 @@ This speeds up solving significantly.
 
 Restricting agents to only see their node, ancestors, and children (not siblings) ensures:
 
-- **Independent exploration**: Each branch explores without bias from parallel branches
-- **Diverse approaches**: Different agents may try different methods for similar problems
-- **Clean synthesis**: Parent knows how to combine child solutions without cross-contamination
-- **Scalability**: Agents don't need to load irrelevant parts of the tree
+-   **Independent exploration**: Each branch explores without bias from parallel branches
+-   **Diverse approaches**: Different agents may try different methods for similar problems
+-   **Clean synthesis**: Parent knows how to combine child solutions without cross-contamination
+-   **Scalability**: Agents don't need to load irrelevant parts of the tree
 
 ### When to DECOMPOSE vs SOLVE?
 
 The agent decides based on:
 
 **DECOMPOSE when:**
-- Problem requires multiple distinct sub-questions
-- Different aspects need different types of research
-- Problem is broad with natural subdivisions
-- Cannot answer without constituent questions
+
+-   Problem requires multiple distinct sub-questions
+-   Different aspects need different types of research
+-   Problem is broad with natural subdivisions
+-   Cannot answer without constituent questions
 
 **SOLVE when:**
-- Can research/experiment directly
-- Problem is specific and focused
-- Clear methodology exists
-- Further breakdown adds no value
+
+-   Can research/experiment directly
+-   Problem is specific and focused
+-   Clear methodology exists
+-   Further breakdown adds no value
 
 ## Example Problem Trees
 
 ### Simple (2 levels):
+
 ```
 "What's the market cap of AI companies?"
 ├── us-ai-companies/     [SOLVE: direct research]
@@ -194,6 +210,7 @@ The agent decides based on:
 ```
 
 ### Complex (4 levels):
+
 ```
 "Should German gov use Linux or Windows?"
 ├── cost-analysis/
@@ -224,44 +241,48 @@ The agent decides based on:
 ### Skills Location
 
 Skills are in `.claude/skills/`:
-- `.claude/skills/init-problem-tree/SKILL.md`
-- `.claude/skills/solve-node/SKILL.md`
+
+-   `.claude/skills/init-problem-tree/SKILL.md`
+-   `.claude/skills/solve-node/SKILL.md`
 
 ### Status Values
 
-- `pending`: Not yet started
-- `decomposed`: Sub-problems created, waiting for child solutions
-- `solving`: Currently researching/working
-- `solved`: Solution complete
+-   `pending`: Not yet started
+-   `decomposed`: Sub-problems created, waiting for child solutions
+-   `solving`: Currently researching/working
+-   `solved`: Solution complete
 
 ### Required Files
 
 Each node MUST have:
-- `PROBLEM.md`: What needs to be answered
-- `STATUS.md`: Current state
+
+-   `PROBLEM.md`: What needs to be answered
+-   `STATUS.md`: Current state
 
 Generated by agents:
-- `ANALYSIS.md`: Agent's reasoning
-- `SOLUTION.md`: The answer
-- `subproblems/`: Child nodes (if decomposed)
+
+-   `ANALYSIS.md`: Agent's reasoning
+-   `SOLUTION.md`: The answer
+-   `subproblems/`: Child nodes (if decomposed)
 
 ## Limitations
 
-- Requires Claude Code CLI
-- Each agent invocation uses API credits
-- Large trees can take time (though parallelized)
-- Depth limited by practical considerations (4-5 levels recommended max)
-- No automatic retrying of failed nodes (must manually re-run)
+-   Requires Claude Code CLI
+-   Each agent invocation uses API credits
+-   Large trees can take time (though parallelized)
+-   Depth limited by practical considerations (4-5 levels recommended max)
+-   No automatic retrying of failed nodes (must manually re-run)
 
 ## Future Enhancements
 
 Possible improvements:
-- Progress dashboard showing tree status
-- Automatic retry logic for failed nodes
-- Cost estimation before running
-- Visualization of the problem tree
-- Confidence scoring aggregation
-- Conflict detection between branch solutions
+
+-   Progress dashboard showing tree status
+-   Automatic retry logic for failed nodes
+-   Cost estimation before running
+-   Visualization of the problem tree
+-   Confidence scoring aggregation
+-   Conflict detection between branch solutions
 
 ## Getting Started
 

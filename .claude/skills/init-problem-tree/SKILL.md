@@ -15,13 +15,14 @@ When a user wants to start a new problem tree:
 
 1. **Clarify the problem**: Make sure you understand the root problem/question clearly. Ask for
    clarification if needed.
-
+    - If the problem is one of a subjective domain, e.g. a personal problem the user is facing or
+      one that requires subjective preferences and personal details, query the user for these
+      details. For example, if the user is trying to determine where to live, you should ask them
+      questions about their life and preferences to help build the issue tree
 2. **Choose/create the root directory**:
-
     - Ask the user where they want to create the problem tree, or suggest a name based on the
       problem
     - Create the directory: `mkdir -p issues/problem-name`
-
 3. **Create the root PROBLEM.md**:
 
     ```markdown
